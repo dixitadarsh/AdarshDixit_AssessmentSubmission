@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Hotel Room Reservation – Unstop</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=DM+Mono:wght@500&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f0f4f8;
+    --surface: #ffffff;
+    --surface2: #f8fafc;
+    --border: #e2e8f0;
+    --text: #0f172a;
+    --text-muted: #64748b;
+    --text-xs: #94a3b8;
+    --blue: #1d4ed8;
+    --blue-light: #dbeafe;
+    --green: #15803d;
+    --green-light: #dcfce7;
+    --green-border: #86efac;
+    --orange: #c2410c;
+    --orange-light: #fff7ed;
+    --orange-mid: #fed7aa;
+    --orange-border: #fb923c;
+    --red: #dc2626;
+    --red-light: #fef2f2;
+    --lift-bg: #e8edf5;
+    --font: 'DM Sans', sans-serif;
+    --mono: 'DM Mono', monospace;
+    --radius: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.06);
+    --shadow-md: 0 4px 12px rgba(0,0,0,.10);
+  }
+
+  body {
+    font-family: var(--font);
+    background: var(--bg);
+    min-height: 100vh;
+    padding: 24px 16px;
+    color: var(--text);
+  }
+
+  .wrapper {
+    max-width: 740px;
+    margin: 0 auto;
+  }
+
+  /* ── Header ─────────────────────────── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -.3px;
+  }
+  .header .subtitle {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    background: #1e3a8a;
+    border-radius: 20px;
+    padding: 5px 14px 5px 5px;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: .3px;
+  }
+  .logo-circle {
+    background: #fff;
+    color: #1e3a8a;
+    border-radius: 50%;
+    width: 22px; height: 22px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px; font-weight: 900;
+  }
+
+  /* ── Controls ────────────────────────── */
+  .controls {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 14px;
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .controls input[type=number] {
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-family: var(--font);
+    font-size: 13px;
+    width: 162px;
+    outline: none;
+    color: var(--text);
+    transition: border-color .2s;
+  }
+  .controls input:focus { border-color: var(--blue); }
+  button {
+    font-family: var(--font);
+    font-size: 13px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    padding: 9px 18px;
+    cursor: pointer;
+    transition: opacity .15s, transform .1s;
+  }
+  button:active { transform: scale(.97); }
+  .btn-book  { background: #1d4ed8; color: #fff; }
+  .btn-reset { background: #475569; color: #fff; }
+  .btn-random { background: #7c3aed; color: #fff; }
+
+  /* ── Message ─────────────────────────── */
+  .msg {
+    padding: 10px 14px;
+    border-radius: var(--radius);
+    font-size: 12.5px;
+    font-weight: 500;
+    margin-bottom: 14px;
+    border: 1px solid transparent;
+    transition: all .3s;
+  }
+  .msg.success { background: var(--green-light); color: var(--green); border-color: var(--green-border); }
+  .msg.error   { background: var(--red-light);   color: var(--red);   border-color: #fca5a5; }
+  .msg.info    { background: var(--blue-light);  color: var(--blue);  border-color: #93c5fd; }
+
+  /* ── Building ────────────────────────── */
+  .building {
+    background: var(--surface);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    padding: 14px;
+    display: flex;
+    gap: 10px;
+  }
+  .lift-col {
+    width: 34px;
+    background: var(--lift-bg);
+    border: 1.5px solid var(--border);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    padding: 8px 0;
+  }
+  .lift-label {
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1.8px;
+    text-transform: uppercase;
+  }
+  .floor-grid { flex: 1; }
+  .floor-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 4px;
+    gap: 3px;
+  }
+  .floor-label {
+    font-size: 10px;
+    color: var(--text-xs);
+    width: 24px;
+    text-align: right;
+    flex-shrink: 0;
+    margin-right: 4px;
+    font-family: var(--mono);
+  }
+  .room-grid { display: flex; gap: 3px; flex-wrap: nowrap; }
+  .room {
+    width: 44px;
+    height: 32px;
+    border: 1.5px solid var(--border);
+    background: #fafbfc;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 8.5px;
+    font-weight: 600;
+    color: var(--text-xs);
+    cursor: default;
+    flex-shrink: 0;
+    font-family: var(--mono);
+    transition: background .3s, border-color .3s, color .3s, transform .2s;
+  }
+  .room.booked {
+    background: var(--orange-mid);
+    border-color: var(--orange-border);
+    color: var(--orange);
+  }
+  .room.just-booked {
+    background: var(--green-light);
+    border-color: var(--green-border);
+    color: var(--green);
+    transform: scale(1.08);
+  }
+
+  /* ── Legend ──────────────────────────── */
+  .legend {
+    display: flex;
+    gap: 18px;
+    margin-top: 12px;
+    font-size: 11.5px;
+    color: var(--text-muted);
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .swatch {
+    width: 14px; height: 14px;
+    border-radius: 3px;
+    border: 1.5px solid;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <!-- Header -->
+  <div class="header">
+    <div>
+      <h1>Hotel Room Reservation</h1>
+      <p class="subtitle" id="stats">Loading…</p>
+    </div>
+    <div class="logo">
+      <span class="logo-circle">un</span>stop
+    </div>
+  </div>
+
+  <!-- Controls -->
+  <div class="controls">
+    <input type="number" id="numInput" placeholder="No of Rooms (1–5)" min="1" max="5" />
+    <button class="btn-book"   onclick="handleBook()">Book</button>
+    <button class="btn-reset"  onclick="handleReset()">Reset</button>
+    <button class="btn-random" onclick="handleRandom()">Random</button>
+  </div>
+
+  <!-- Message -->
+  <div class="msg info" id="msg" style="display:none"></div>
+
+  <!-- Building -->
+  <div class="building">
+    <div class="lift-col"><span class="lift-label">Lift / Stair</span></div>
+    <div class="floor-grid" id="floorGrid"></div>
+  </div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <div class="legend-item">
+      <div class="swatch" style="background:#fafbfc;border-color:#d1d5db"></div> Available
+    </div>
+    <div class="legend-item">
+      <div class="swatch" style="background:#dcfce7;border-color:#86efac"></div> Just Booked
+    </div>
+    <div class="legend-item">
+      <div class="swatch" style="background:#fed7aa;border-color:#fb923c"></div> Booked
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── Data ────────────────────────────────────────────────────────────────────
+let rooms = [];
+let recentIds = new Set();
+
+function initRooms() {
+  const r = [];
+  for (let fl = 1; fl <= 9; fl++)
+    for (let pos = 1; pos <= 10; pos++)
+      r.push({ id: fl * 100 + pos, floor: fl, position: pos, booked: false });
+  for (let pos = 1; pos <= 7; pos++)
+    r.push({ id: 1000 + pos, floor: 10, position: pos, booked: false });
+  return r;
+}
+
+// ─── Travel Time ─────────────────────────────────────────────────────────────
+function pairTime(r1, r2) {
+  if (r1.floor === r2.floor) return Math.abs(r1.position - r2.position);
+  return (r1.position - 1) + Math.abs(r1.floor - r2.floor) * 2 + (r2.position - 1);
+}
+function totalTime(rs) {
+  if (rs.length <= 1) return 0;
+  const s = [...rs].sort((a,b) => a.floor !== b.floor ? a.floor-b.floor : a.position-b.position);
+  let t = 0;
+  for (let i = 1; i < s.length; i++) t += pairTime(s[i-1], s[i]);
+  return t;
+}
+
+// ─── Combinatorics ───────────────────────────────────────────────────────────
+function combos(arr, k) {
+  if (k === 0) return [[]];
+  if (arr.length < k) return [];
+  const [h, ...t] = arr;
+  return [...combos(t, k-1).map(c => [h,...c]), ...combos(t, k)];
+}
+function uniquePerms(arr) {
+  if (arr.length <= 1) return [arr];
+  const seen = new Set(); const res = [];
+  for (let i = 0; i < arr.length; i++) {
+    if (seen.has(arr[i])) continue; seen.add(arr[i]);
+    const rest = arr.filter((_,j)=>j!==i);
+    for (const p of uniquePerms(rest)) res.push([arr[i], ...p]);
+  }
+  return res;
+}
+function partitions(n, max) {
+  max = max ?? n;
+  if (n === 0) return [[]];
+  const res = [];
+  for (let f = Math.min(n, max); f >= 1; f--)
+    for (const r of partitions(n-f, f)) res.push([f, ...r]);
+  return res;
+}
+
+// ─── Best rooms on a single floor (min span, prefer lower start) ─────────────
+function pickFloor(avail, m) {
+  if (avail.length < m) return null;
+  const s = [...avail].sort((a,b) => a.position - b.position);
+  let best = null, bestScore = Infinity;
+  for (let i = 0; i <= s.length - m; i++) {
+    const span  = s[i+m-1].position - s[i].position;
+    const score = span * 100 + s[i].position;
+    if (score < bestScore) { bestScore = score; best = s.slice(i, i+m); }
+  }
+  return best;
+}
+
+// ─── Main booking algorithm ───────────────────────────────────────────────────
+function findBestRooms(n) {
+  const avail = rooms.filter(r => !r.booked);
+  if (avail.length < n) return null;
+
+  const byFloor = {};
+  for (const r of avail) (byFloor[r.floor] ??= []).push(r);
+  const floors = Object.keys(byFloor).map(Number).sort((a,b) => a-b);
+
+  let best = null, bestTime = Infinity;
+  const tryC = cand => {
+    if (!cand) return;
+    const t = totalTime(cand);
+    if (t < bestTime) { bestTime = t; best = cand; }
+  };
+
+  // Priority 1: same floor
+  for (const fl of floors)
+    if (byFloor[fl].length >= n) tryC(pickFloor(byFloor[fl], n));
+  if (best) return best;
+
+  // Priority 2: cross-floor, minimize travel time
+  for (const part of partitions(n)) {
+    if (part.length === 1) continue;
+    if (part.length > floors.length) continue;
+    for (const fc of combos(floors, part.length)) {
+      for (const perm of uniquePerms(part)) {
+        const cand = []; let ok = true;
+        for (let i = 0; i < fc.length; i++) {
+          const picked = pickFloor(byFloor[fc[i]] || [], perm[i]);
+          if (!picked) { ok = false; break; }
+          cand.push(...picked);
+        }
+        if (ok) tryC(cand);
+      }
+    }
+  }
+  return best;
+}
+
+// ─── UI ───────────────────────────────────────────────────────────────────────
+function showMsg(text, type) {
+  const el = document.getElementById('msg');
+  el.textContent = text;
+  el.className = 'msg ' + type;
+  el.style.display = 'block';
+}
+
+function updateStats() {
+  const booked = rooms.filter(r => r.booked).length;
+  document.getElementById('stats').textContent =
+    `${97 - booked} available · ${booked} booked · 97 total`;
+}
+
+function renderGrid() {
+  const grid = document.getElementById('floorGrid');
+  grid.innerHTML = '';
+  for (let fl = 10; fl >= 1; fl--) {
+    const row = document.createElement('div');
+    row.className = 'floor-row';
+
+    const label = document.createElement('span');
+    label.className = 'floor-label';
+    label.textContent = fl;
+    row.appendChild(label);
+
+    const inner = document.createElement('div');
+    inner.className = 'room-grid';
+
+    const flRooms = rooms.filter(r => r.floor === fl).sort((a,b) => a.position-b.position);
+    for (const r of flRooms) {
+      const cell = document.createElement('div');
+      cell.className = 'room' + (recentIds.has(r.id) ? ' just-booked' : r.booked ? ' booked' : '');
+      cell.textContent = r.id;
+      cell.title = `Room ${r.id} – ${r.booked ? 'Booked' : 'Available'}`;
+      inner.appendChild(cell);
+    }
+    row.appendChild(inner);
+    grid.appendChild(row);
+  }
+  updateStats();
+}
+
+function handleBook() {
+  const n = parseInt(document.getElementById('numInput').value);
+  if (!n || n < 1 || n > 5) {
+    showMsg('Please enter a number between 1 and 5.', 'error'); return;
+  }
+  const result = findBestRooms(n);
+  if (!result) {
+    showMsg('Not enough available rooms for your request.', 'error'); return;
+  }
+  const ids = new Set(result.map(r => r.id));
+  recentIds = ids;
+  for (const r of rooms) if (ids.has(r.id)) r.booked = true;
+  const time = totalTime(result);
+  const roomList = [...result].sort((a,b) => a.id-b.id).map(r => r.id).join(', ');
+  showMsg(`✓ Booked: ${roomList}  |  Travel time: ${time} min`, 'success');
+  document.getElementById('numInput').value = '';
+  renderGrid();
+}
+
+function handleReset() {
+  rooms = initRooms();
+  recentIds = new Set();
+  showMsg('All bookings have been cleared.', 'info');
+  document.getElementById('numInput').value = '';
+  renderGrid();
+}
+
+function handleRandom() {
+  rooms = initRooms().map(r => ({ ...r, booked: Math.random() < 0.35 }));
+  recentIds = new Set();
+  const booked = rooms.filter(r => r.booked).length;
+  showMsg(`Random occupancy generated — ${booked} rooms occupied.`, 'info');
+  renderGrid();
+}
+
+document.getElementById('numInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') handleBook();
+});
+
+// Init
+rooms = initRooms();
+renderGrid();
+</script>
+</body>
+</html>
